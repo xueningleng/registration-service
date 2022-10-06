@@ -43,8 +43,17 @@ class Registration:
         return result
 
     @staticmethod
+    def get_users():
+        sql = "SELECT phone, first_name, last_name FROM `registration`"
+        conn = Registration._get_connection()
+        cur = conn.cursor()
+        cur.execute(sql)
+        res = cur.fetchall()
+
+        return res
+
+    @staticmethod
     def add_user(phone, fname, lname, pword):
-        print(phone)
         sql = "INSERT INTO `registration` (phone, first_name, last_name, password) VALUES (%s, %s, %s, %s)"
         conn = Registration._get_connection()
         cur = conn.cursor()

@@ -15,7 +15,8 @@ header_text = '''
 instructions = '''
     <p><em>Hint</em>: <br>
     Append '/api/health' to the URL to test connectivity<br>
-    Append '/api/register/?phone=value&first_name=value&last_name=value&password=value' to the URL with your own value to register!
+    Append '/api/register/?phone=value&first_name=value&last_name=value&password=value' to the URL with your own value to register!<br>
+    Append '/api/check-registration/' to the URL to view existing records by contact and name<br>
     </p>\n'''
 home_link = '<p><a href="/">Back</a></p>\n'
 footer_text = '</body>\n</html>'
@@ -60,6 +61,16 @@ def register():
         result = Response(err.args[1], status=404, content_type="text/plain")
 
 
+    return result
+
+@application.route("/api/check-registration/", methods = ['GET', 'POST'])
+def check_registration():
+    msg = "Existing Registration Records:\n"
+    records = Registration.get_users();
+    for record in records:
+        msg += str(record) + '\n'
+
+    result = Response(msg, status=200, content_type="text/plain")
     return result
 
 if __name__ == '__main__':
