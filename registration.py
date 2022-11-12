@@ -27,11 +27,10 @@ class Registration:
     @staticmethod
     def create_user_table():
         sql = ("CREATE TABLE IF NOT EXISTS `registration` ("
-        "  `phone` varchar(10) NOT NULL ,"
+        "  `email` varchar(30) NOT NULL ,"
         "  `first_name` varchar(20) NOT NULL,"
         "  `last_name` varchar(20) NOT NULL,"
-        "  `password` varchar(20) NOT NULL,"
-        "  PRIMARY KEY (`phone`)"
+        "  PRIMARY KEY (`email`)"
         ") ENGINE=InnoDB")
 
         conn = Registration._get_connection()
@@ -44,7 +43,7 @@ class Registration:
 
     @staticmethod
     def get_users():
-        sql = "SELECT phone, first_name, last_name FROM `registration`"
+        sql = "SELECT email, first_name, last_name FROM `registration`"
         conn = Registration._get_connection()
         cur = conn.cursor()
         cur.execute(sql)
@@ -53,11 +52,23 @@ class Registration:
         return res
 
     @staticmethod
-    def add_user(phone, fname, lname, pword):
-        sql = "INSERT INTO `registration` (phone, first_name, last_name, password) VALUES (%s, %s, %s, %s)"
+    def get_user_record(email):
+        sql = "SELECT * FROM `registration` WHERE email = %s"
+        val = (email, )
         conn = Registration._get_connection()
         cur = conn.cursor()
-        val = (phone, fname, lname, pword)
+        cur.execute(sql, val)
+        res = cur.fetchall()
+
+        return res
+
+    @staticmethod
+
+    def add_user(email, fname, lname):
+        sql = "INSERT INTO `registration` (email, first_name, last_name) VALUES (%s, %s, %s)"
+        conn = Registration._get_connection()
+        cur = conn.cursor()
+        val = (email, fname, lname)
         try:
             cur.execute(sql, val)
         except(pymysql.err.IntegrityError) as e:

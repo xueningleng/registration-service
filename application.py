@@ -29,12 +29,29 @@ logout_btn = '''
 
 application.register_blueprint(google_auth.app)
 application.secret_key = os.environ.get("FLASK_SECRET_KEY", default=False)
+
 @application.route('/')
 def index():
     if google_auth.is_logged_in():
         user_info = google_auth.get_user_info()
-        hello_text = "<div> Welcome back "+ user_info['given_name']+ " :) <br> You are signed in with email: " + user_info['email'] + '</div><br>'
-        return  header_text + hello_text + logout_btn + footer_text
+
+        res = Registration.get_user_record(user_info['email'])
+        if res:
+            # returning account
+            hello_text = "<div> Welcome back " + user_info['given_name'] + " :) <br> You are signed in with email: " + \
+                         user_info['email'] + "</div><br>"
+        else:
+            # not registered yet
+
+            err = Registration.add_user(user_info['email'], user_info['given_name'], user_info['family_name'])
+            if not err:
+                hello_text = "<div> Hello "+ user_info['given_name'] + "! <br> You are now registered under email: " + \
+                    user_info['email'] + "</div><br>"
+
+            else:
+                hello_text = "<div> Sorry! Registration failed. Please try again later." + err.args[1] + "</div><br>"
+
+        return header_text + hello_text + logout_btn + footer_text
 
     return  header_text +'<div>You are not currently logged in. </div>'+ instructions + login_btn + footer_text
 
@@ -49,31 +66,6 @@ def get_health():
     }
 
     result = Response(json.dumps(msg), status=200, content_type="application/json")
-
-    return result
-
-@application.route("/api/register/", methods = ['GET', 'POST'])
-def register():
-    # ?phone=value&first_name=value&last_name=value&password=value
-    # test: {ENDPOINT}/api/register/?phone=2223330000&first_name=foo&last_name=bar&password=88888888
-    phone = request.args.get('phone', type=str)
-    fname = request.args.get('first_name', type=str)
-    lname = request.args.get('last_name', type=str)
-    pword = request.args.get('password', type=str)
-    msg = {
-        "phone" : phone,
-        "name" : fname+" "+lname,
-        "pword" : "*"*len(pword),
-    }
-
-    err = Registration.add_user(phone, fname, lname, pword);
-    if not err:
-        msg["result"]= "Registration succeeded!"
-        result = Response(json.dumps(msg), status=200, content_type="application/json")
-
-    else:
-        result = Response(err.args[1], status=404, content_type="text/plain")
-
 
     return result
 
