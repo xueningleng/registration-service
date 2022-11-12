@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Google Sign In</title>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <meta name="google-signin-client_id" content="960507085347-njb24p6ls7jk2jus55erhmcof61fpf42.apps.googleusercontent.com">
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+</head>
+<body>
+
+{#     <div id="g_id_onload"#}
+{#         data-client_id="960507085347-ucip832a40af0d2ul1fsbclvgtu5a8ac.apps.googleusercontent.com"#}
+{#         data-login_uri="http://registration-env.eba-xi2mxgp6.us-east-1.elasticbeanstalk.com/google-signin"#}
+{#         data-auto_prompt="false">#}
+{#      </div>#}
+        <div>
+            Hello World
+        </div>
+        <div id="g_id_onload"
+         data-client_id="960507085347-njb24p6ls7jk2jus55erhmcof61fpf42.apps.googleusercontent.com"
+         data-login_uri="http://127.0.0.1:5011/google-signin"
+         data-auto_prompt="false">
+      </div>
+
+      <div class="g_id_signin"
+         data-type="standard"
+         data-size="large"
+         data-theme="outline"
+         data-text="sign_in_with"
+         data-shape="rectangular"
+         data-logo_alignment="left">
+      </div>
+</body>
+</html>

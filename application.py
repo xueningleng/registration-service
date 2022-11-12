@@ -2,6 +2,8 @@ import logging.handlers
 from flask import Flask, Response, request
 from datetime import datetime
 import json
+import os
+import google_auth
 from registration import Registration
 from flask_cors import CORS
 
@@ -15,15 +17,27 @@ header_text = '''
 instructions = '''
     <p><em>Hint</em>: <br>
     Append '/api/health' to the URL to test connectivity<br>
-    Append '/api/register/?phone=value&first_name=value&last_name=value&password=value' to the URL with your own value to register!<br>
-    Append '/api/check-registration/' to the URL to view existing records by contact and name<br>
+    Append '/api/register/?phone=value&first_name=value&last_name=value&password=value' to the URL with your own value to register!
     </p>\n'''
 home_link = '<p><a href="/">Back</a></p>\n'
 footer_text = '</body>\n</html>'
+login_btn = '''
+<a class="button" href="/google/login">Google Login</a>'''
+logout_btn = '''
+<a class="button" href="/google/logout">Logout</a>'''
 
-# add a rule for the index page.
-application.add_url_rule('/', 'index', (lambda: header_text +
-instructions + footer_text))
+
+application.register_blueprint(google_auth.app)
+application.secret_key = os.environ.get("FLASK_SECRET_KEY", default=False)
+@application.route('/')
+def index():
+    if google_auth.is_logged_in():
+        user_info = google_auth.get_user_info()
+        hello_text = "<div> Welcome back "+ user_info['given_name']+ " :) <br> You are signed in with email: " + user_info['email'] + '</div><br>'
+        return  header_text + hello_text + logout_btn + footer_text
+
+    return  header_text +'<div>You are not currently logged in. </div>'+ instructions + login_btn + footer_text
+
 
 @application.get("/api/health")
 def get_health():
