@@ -1,5 +1,5 @@
 import logging.handlers
-from flask import Flask, Response, request
+from flask import Flask, Response, request, redirect
 from datetime import datetime
 import json
 import os
@@ -25,11 +25,22 @@ login_btn = '''
 logout_btn = '''
 <a class="button" href="/google/logout">Logout</a>'''
 
-
 application.register_blueprint(google_auth.app)
 application.secret_key = os.environ.get("FLASK_SECRET_KEY", default=False)
 
-@application.route('/')
+@application.before_request
+def load_user():
+    if not google_auth.is_logged_in() and request.endpoint in ('check_registration', 'google_logout'):
+        print("user not logged in")
+        return redirect("/")
+
+
+@application.after_request
+def after_request_func(response):
+    print("request completed")
+    return response
+
+@application.route('/',  endpoint='auth')
 def index():
     if google_auth.is_logged_in():
         user_info = google_auth.get_user_info()
@@ -54,8 +65,7 @@ def index():
 
     return  header_text +'<div>You are not currently logged in. </div>'+ instructions + login_btn + footer_text
 
-
-@application.get("/api/health")
+@application.get("/api/health", endpoint='health_check')
 def get_health():
     t = str(datetime.now())
     msg = {
@@ -68,7 +78,7 @@ def get_health():
 
     return result
 
-@application.route("/api/check-registration/", methods = ['GET', 'POST'])
+@application.route("/api/check-registration/", methods = ['GET'], endpoint='check_registration')
 def check_registration():
     msg = "Existing Registration Records:\n"
     records = Registration.get_users();
