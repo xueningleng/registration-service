@@ -13,7 +13,29 @@ CORS(application)
 
 # some bits of text for the page.
 header_text = '''
-    <html>\n<head> <title>Registration</title> </head>\n<body> <h2>REGISTRATION PAGE</h2> '''
+    <html>\n<head> 
+    <title>Registration</title>
+    <style type="text/css">
+         body{
+         margin-top: 50px;
+         margin-left: 100px;
+         background-color: #E9E5C5;
+         }
+         h2{
+         color: #AC7347;
+         font-weight: bolder;
+         }
+         p{ 
+         color: #AC7347;
+         font-weight: bold;
+         line-height: 1.5;
+         }
+         .msg{
+         color: #7B864C;
+         line-height: 1.5;
+         }
+    </style>
+     </head>\n<body>  <h2>REGISTRATION PAGE</h2> '''
 instructions = '''
     <p><em>Hint</em>: <br>
     Append '/api/health' to the URL to test connectivity<br>
@@ -50,22 +72,22 @@ def index():
         res = Registration.get_user_record(user_info['email'])
         if res:
             # returning account
-            hello_text = "<div> Welcome back " + user_info['given_name'] + " :) <br> You are signed in with email: " + \
+            hello_text = "<div class=msg> Welcome back " + user_info['given_name'] + " :) <br> You are signed in with email: " + \
                          user_info['email'] + "</div><br>"
         else:
             # not registered yet
 
             err = Registration.add_user(user_info['email'], user_info['given_name'], user_info['family_name'])
             if not err:
-                hello_text = "<div> Hello "+ user_info['given_name'] + "! <br> You are now registered under email: " + \
+                hello_text = "<div class=msg> Hello "+ user_info['given_name'] + "! <br> You are now registered under email: " + \
                     user_info['email'] + "</div><br>"
 
             else:
-                hello_text = "<div> Sorry! Registration failed. Please try again later." + err.args[1] + "</div><br>"
+                hello_text = "<div class=msg> Sorry! Registration failed. Please try again later." + err.args[1] + "</div><br>"
 
         return header_text + hello_text + logout_btn + footer_text
 
-    return  header_text +'<div>You are not currently logged in. </div>'+ instructions + login_btn + footer_text
+    return  header_text +'<div class=msg>You are not currently logged in. </div>'+ instructions + login_btn + footer_text
 
 @application.get("/api/health", endpoint='health_check')
 def get_health():
