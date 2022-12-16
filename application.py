@@ -17,6 +17,8 @@ header_text = '''
 instructions = '''
     <p><em>Hint</em>: <br>
     Append '/api/health' to the URL to test connectivity<br>
+    Append '/api/check-registration' to view existing list of users <br>
+    
     </p>\n'''
 home_link = '<p><a href="/">Back</a></p>\n'
 footer_text = '</body>\n</html>'
