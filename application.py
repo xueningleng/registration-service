@@ -1,5 +1,5 @@
 import logging.handlers
-from flask import Flask, Response, request, redirect
+from flask import Flask, Response, request, redirect, jsonify
 from datetime import datetime
 import json
 import os
@@ -54,7 +54,7 @@ application.secret_key = os.environ.get("FLASK_SECRET_KEY", default=False)
 
 @application.before_request
 def load_user():
-    if not google_auth.is_logged_in() and request.endpoint in ('check_registration', 'google_logout'):
+    if not google_auth.is_logged_in() and request.endpoint in ('check_registration', 'google_logout', 'get_email'):
         print("user not logged in")
         return redirect("/")
 
@@ -63,6 +63,7 @@ def load_user():
 def after_request_func(response):
     print("request completed")
     return response
+
 
 @application.route('/',  endpoint='auth')
 def index():
@@ -87,7 +88,23 @@ def index():
 
         return header_text + hello_text + logout_btn + footer_text
 
-    return  header_text +'<div class=msg>You are not currently logged in. </div>'+ instructions + login_btn + footer_text
+    return header_text +'<div class=msg>You are not currently logged in. </div>'+ instructions + login_btn + footer_text
+
+
+@application.get('/get_email', endpoint='get_email')
+def get_email():
+    res = ''
+    if google_auth.is_logged_in():
+        user_info = google_auth.get_user_info()
+
+        res = user_info['email']
+    msg = {
+        'email': res,
+    }
+    result = Response(json.dumps(msg), status=200, content_type="application/json")
+
+    return result
+
 
 @application.get("/api/health", endpoint='health_check')
 def get_health():
@@ -101,6 +118,7 @@ def get_health():
     result = Response(json.dumps(msg), status=200, content_type="application/json")
 
     return result
+
 
 @application.route("/api/check-registration/", methods = ['GET'], endpoint='check_registration')
 def check_registration():
