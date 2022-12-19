@@ -54,7 +54,7 @@ application.secret_key = os.environ.get("FLASK_SECRET_KEY", default=False)
 
 @application.before_request
 def load_user():
-    if not google_auth.is_logged_in() and request.endpoint in ('check_registration', 'google_logout', 'get_email'):
+    if not google_auth.is_logged_in() and request.endpoint in ('check_registration', 'google_logout'):
         print("user not logged in")
         return redirect("/")
 
@@ -91,17 +91,18 @@ def index():
     return header_text +'<div class=msg>You are not currently logged in. </div>'+ instructions + login_btn + footer_text
 
 
-@application.get('/get_email', endpoint='get_email')
+@application.route('/get_email', methods=['GET'], endpoint='get_email')
 def get_email():
-    res = ''
+    res = 'example@email'
     if google_auth.is_logged_in():
         user_info = google_auth.get_user_info()
 
         res = user_info['email']
+
     msg = {
         'email': res,
     }
-    result = Response(json.dumps(msg), status=200, content_type="application/json")
+    result = Response(json.dumps(msg), status=200, content_type="application.json")
 
     return result
 
