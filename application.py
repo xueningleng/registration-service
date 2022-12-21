@@ -54,7 +54,7 @@ application.secret_key = os.environ.get("FLASK_SECRET_KEY", default=False)
 
 @application.before_request
 def load_user():
-    if not google_auth.is_logged_in() and request.endpoint in ('google_logout'):
+    if not google_auth.is_logged_in() and request.endpoint == 'google_logout':
         print("user not logged in")
         return redirect("/")
 
