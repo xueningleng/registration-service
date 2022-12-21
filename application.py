@@ -123,13 +123,10 @@ def get_health():
 
 @application.route("/api/check-registration/", methods = ['GET'], endpoint='check_registration')
 def check_registration():
-    msg = "Existing Registration Records:\n"
-    records = Registration.get_users();
-    for record in records:
-        msg += str(record) + '\n'
-
-    result = Response(msg, status=200, content_type="text/plain")
+    records = Registration.get_users()
+    result = Response(json.dumps(records), status=200, content_type="application/json")
     return result
+
 
 if __name__ == '__main__':
     application.debug = True
