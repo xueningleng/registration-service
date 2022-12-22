@@ -93,7 +93,7 @@ def index():
 
 @application.route('/get_email', methods=['GET'], endpoint='get_email')
 def get_email():
-    res = 'example@email'
+    res = 'example@gmail.com'
     if google_auth.is_logged_in():
         user_info = google_auth.get_user_info()
 
